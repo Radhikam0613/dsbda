@@ -1,0 +1,153 @@
+// Import Spark libraries
+import org.apache.spark.sql.SparkSession
+
+object WordCountApp {
+  def main(args: Array[String]): Unit = {
+
+    // Create Spark Session
+    val spark = SparkSession.builder()
+      .appName("Simple Word Count")
+      .master("local[*]")
+      .getOrCreate()
+
+    // Load text file
+    val data = spark.read.textFile("data.txt")
+
+    // Split lines into words and count them
+    import spark.implicits._   // Needed for Dataset operations
+
+    val wordCounts = data
+      .flatMap(line => line.split("\\W+"))   // Split words properly
+      .filter(_.nonEmpty)                   // Remove empty strings
+      .groupBy("value")                     // Group by word column
+      .count()                              // Count occurrences
+
+    // Show result
+    wordCounts.show()
+
+    // Stop Spark
+    spark.stop()
+  }
+}
+
+
+
+What is Apache Spark?
+
+A fast, distributed computing framework for processing large datasets.
+
+2. What is Scala?
+
+A programming language commonly used with Spark.
+
+3. What is the purpose of this program?
+
+To count frequency of words in a text file using Spark.
+
+4. What is SparkSession?
+
+Entry point to interact with Spark.
+
+5. Why do we use .master("local[*]")?
+
+Runs Spark locally using all available CPU cores.
+
+6. What does .appName() do?
+
+Assigns a name to the Spark application.
+
+7. What does spark.read.textFile("data.txt") return?
+
+A Dataset[String]
+
+8. What is the default column name here?
+
+"value"
+
+9. What does flatMap() do?
+
+Splits each line into multiple words.
+
+10. Why use \\W+ in split?
+
+Splits based on non-word characters (handles punctuation)
+
+11. What does filter(_.nonEmpty) do?
+
+Removes empty strings.
+
+12. What is groupBy("value")?
+
+Groups data based on word values.
+
+13. What does count() do?
+
+Counts occurrences of each group.
+
+14. What does show() do?
+
+Displays output in tabular format.
+
+15. Difference between show() and collect()?
+
+show()	collect()
+
+Displays limited data	Brings all data to driver
+
+Safe for large data	Risky (memory issue)
+
+16. What is a transformation in Spark?
+
+Lazy operation that defines computation (e.g., flatMap, filter)
+
+17. What is an action?
+
+Operation that triggers execution (e.g., show())
+
+18. Is this code executed immediately?
+
+No, Spark uses lazy evaluation
+
+19. What is lazy evaluation?
+
+Execution happens only when an action is called
+
+20. Why import spark.implicits._?
+
+Enables implicit conversions for Dataset operations
+
+21. What happens if you remove filter(_.nonEmpty)?
+
+Empty strings will be counted as words
+
+22. What happens if file is very large?
+
+Spark distributes processing across nodes
+
+23. Why is Spark faster than traditional processing?
+
+Uses in-memory computation and parallel processing
+
+24. Difference between RDD and Dataset?
+
+RDD	Dataset
+
+Low-level	High-level
+
+No schema	Structured
+
+More control	Optimized
+
+25. What error occurs if spark.implicits._ is not imported?
+
+Dataset operations like flatMap may fail
+
+26. Why use groupBy instead of groupByKey?
+
+More efficient and avoids unnecessary shuffling
+
+27. What if "value" column is incorrect?
+
+Code will fail because column won’t exist
+
+“The program uses SparkSession to read a text file as a Dataset, applies transformations like flatMap, filter, and groupBy to count words, and displays results using an action.”
